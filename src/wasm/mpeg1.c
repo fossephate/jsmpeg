@@ -983,14 +983,22 @@ void decode_picture(mpeg1_decoder_t *self) {
 		bit_buffer_rewind(self->bits, 32);
 	}
 
-	// If this is a reference picutre then rotate the prediction pointers
+	// If this is a reference picture then rotate the prediction pointers
 	if (
 		self->picture_type == PICTURE_TYPE_INTRA ||
 		self->picture_type == PICTURE_TYPE_PREDICTIVE
 	) {
 		mpeg1_planes_t temp = self->planes_forward;
-		self->planes_forward = self->planes_current;
-		self->planes_current = temp;
+		// self->planes_forward = self->planes_current;
+		// self->planes_current = temp;
+		
+		self->planes_forward.y = self->planes_current.y;
+		self->planes_forward.cr = self->planes_current.cr;
+		self->planes_forward.cb = self->planes_current.cb;
+
+		self->planes_current.y = temp.y;
+		self->planes_current.cr = temp.cr;
+		self->planes_current.cb = temp.cb;
 	}
 }
 
@@ -1528,6 +1536,7 @@ void decode_block(mpeg1_decoder_t *self, int block) {
 		}
 
 		n += run;
+		if (n < 0 || n >= 64) break;
 		int dezigZagged = ZIG_ZAG[n];
 		n++;
 
