@@ -153,8 +153,8 @@ export class MPEG1 extends BaseDecoder {
 	// Sequence Layer
 
 
-	decodeSequenceHeader = function() {
-		var newWidth = this.bits.read(12),
+	decodeSequenceHeader = () => {
+		let newWidth = this.bits.read(12),
 			newHeight = this.bits.read(12);
 
 		// skip pixel aspect ratio

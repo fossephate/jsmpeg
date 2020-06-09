@@ -70,7 +70,7 @@ export class BitBuffer {
 
 		// Calculate total byte length
 		if (isArrayOfBuffers) {
-			let totalLength = 0;
+			totalLength = 0;// removed let bug 6/9/2020
 			for (let i = 0; i < buffers.length; i++) {
 				totalLength += buffers[i].byteLength;
 			}
@@ -80,6 +80,7 @@ export class BitBuffer {
 
 		// Do we need to resize or evict?
 		if (totalLength > available) {
+			
 			if (this.mode === BitBuffer.MODE.EXPAND) {
 				let newSize = Math.max(this.bytes.length * 2, totalLength - available);
 				this.resize(newSize);
@@ -101,7 +102,6 @@ export class BitBuffer {
 
 	appendSingleBuffer = (buffer) => {
 		buffer = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
-
 		this.bytes.set(buffer, this.byteLength);
 		this.byteLength += buffer.length;
 	};

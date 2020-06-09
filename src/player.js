@@ -26,25 +26,10 @@ import { WASM_BINARY_INLINED } from "../jsmpeg.wasm.js";
 import { Now, Base64ToArrayBuffer } from "./utils.js";
 
 export class Player {
-	constructor(url, options) {
+	constructor(options) {
+		options.streaming = true;
 		this.options = options || {};
-
-		if (options.source) {
-			this.source = new options.source(url, options);
-			options.streaming = !!this.source.streaming;
-		} else if (url.match(/^wss?:\/\//)) {
-			// this.source = new WSSource(url, options);
-			// options.streaming = true;
-		} else if (url.match(/^https?:\/\//)) {
-			this.source = new SIOSource(url, options);
-			options.streaming = true;
-		} else if (options.progressive !== false) {
-			// this.source = new AjaxProgressiveSource(url, options);
-			// options.streaming = false;
-		} else {
-			// this.source = new AjaxSource(url, options);
-			// options.streaming = false;
-		}
+		this.source = new SIOSource(options);
 
 		this.maxAudioLag = options.maxAudioLag || 0.25;
 		this.loop = options.loop !== false;
@@ -53,6 +38,8 @@ export class Player {
 		this.demuxer = new TS(options);
 		// this.demuxer = new TS2(options);
 		this.source.connect(this.demuxer);
+
+		options.disableWebAssembly = true;
 
 		if (!options.disableWebAssembly && WASM.IsSupported()) {
 			this.wasmModule = WASM.GetModule();
